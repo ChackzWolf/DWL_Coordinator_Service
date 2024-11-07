@@ -63,15 +63,19 @@ export class SagaCoordinator {
     const transaction = await this.transactionRepo.getTransaction(transactionId);
     console.log(transaction, 'before checking transaction all service completed')
     if (transaction) {
+     
       const allResponded = this.checkAllServicesResponded(transaction);
       if (allResponded) {
         const hasFailures = transaction.serviceResponses.some(response => response.status === 'FAILED');
         if (hasFailures) {
           await this.handleSagaFailure(transaction);
         } else {
+          console.log(' all transaction completed and no fails')
           await this.completeTransaction(transaction);
         }
       }
+    }else{
+      console.log('nop')
     }
   }
 
@@ -172,13 +176,18 @@ export class SagaCoordinator {
     await this.kafkaConfig.sendMessage('payment.saga.completed', {
       transactionId: transaction.transactionId,
       status: 'SUCCESS'
-    });
+    }); 
+    console.log('Message sent to topic payment.saga.completed')
   }
 
   private async handleSagaFailure(transaction: TransactionState) {
     transaction.status = 'FAILED';
     await this.transactionRepo.updateTransaction(transaction);
-
+    await this.kafkaConfig.sendMessage('payment.saga.completed', {
+      transactionId: transaction.transactionId,
+      status: 'FAILED'
+    }); 
+    console.log('sent to payment that failed')
     // Get list of services that completed successfully and need rollback
     console.log(transaction.serviceResponses, 'services response')
     const servicesToRollback = transaction.serviceResponses
