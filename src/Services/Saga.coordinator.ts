@@ -36,8 +36,13 @@ export class SagaCoordinator {
     await consumer.run({
       eachMessage: async ({ topic, partition, message }) => {
         const messageData = JSON.parse(message.value?.toString() || '{}');
-        
+        console.log({
+          offset: message.offset,
+          value: messageData,
+          topic
+        }, 'partition off set')
         if (topic === 'payment.success') {
+
           await this.handlePaymentSuccess(messageData);
         } else {
           await this.handleServiceResponse(topic, messageData);
@@ -49,19 +54,19 @@ export class SagaCoordinator {
   private async handleServiceResponse(topic: string, messageData: any) {
     const { transactionId, status } = messageData;
     const service = `${topic.split('.')[0]}-service`;
-    console.log(messageData, "this is message data from handle response");
+    // console.log(messageData, "this is message data from handle response");
     const serviceResponse: ServiceResponse = {
       service,
       status: status,
       error:'',
       timestamp: new Date()
     };
-    console.log(service, 'to save');
+    // console.log(service, 'to save');
     await this.transactionRepo.updateServiceResponse(transactionId, serviceResponse);
     
     // Check if all services have responded
     const transaction = await this.transactionRepo.getTransaction(transactionId);
-    console.log(transaction, 'before checking transaction all service completed')
+    // console.log(transaction, 'before checking transaction all service completed')
     if (transaction) {
      
       const allResponded = this.checkAllServicesResponded(transaction);
@@ -90,7 +95,12 @@ export class SagaCoordinator {
       createdAt: new Date(),
       updatedAt: new Date()
     };
-    console.log(transaction, "transaction to save.")
+    // console.log(transaction, "transaction to save.")
+    const existing = await this.transactionRepo.isTransactionExists(transaction.transactionId);
+    if(existing){
+      console.log('existing')
+      return;
+    }
     await this.transactionRepo.saveTransaction(transaction);
     await this.executeSagaSteps(transaction);
   }
@@ -177,19 +187,15 @@ export class SagaCoordinator {
       transactionId: transaction.transactionId,
       status: 'SUCCESS'
     }); 
-    console.log('Message sent to topic payment.saga.completed')
+    console.log('Message sent to topic payment.saga.completed SUCCESS')
   }
 
   private async handleSagaFailure(transaction: TransactionState) {
     transaction.status = 'FAILED';
     await this.transactionRepo.updateTransaction(transaction);
-    await this.kafkaConfig.sendMessage('payment.saga.completed', {
-      transactionId: transaction.transactionId,
-      status: 'FAILED'
-    }); 
-    console.log('sent to payment that failed')
+
     // Get list of services that completed successfully and need rollback
-    console.log(transaction.serviceResponses, 'services response')
+    // console.log(transaction.serviceResponses, 'services response')
     const servicesToRollback = transaction.serviceResponses
       .filter(response => response.status === 'COMPLETED')
       .map(response => response.service);
@@ -208,9 +214,10 @@ export class SagaCoordinator {
     }
 
     // Notify payment service of failure
-    await this.kafkaConfig.sendMessage('payment.saga.failed', {
+    await this.kafkaConfig.sendMessage('payment.saga.completed', {
       transactionId: transaction.transactionId,
-      error: 'One or more services failed to process the transaction'
-    });
+      status: 'FAILED'
+    }); 
+    console.log('sent to payment that failed')
   }
 }

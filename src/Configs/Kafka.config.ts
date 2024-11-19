@@ -20,7 +20,12 @@ export class KafkaConfig {
   }
 
   public async createConsumer(groupId: string): Promise<Consumer> {
-    const consumer = this.kafka.consumer({ groupId });
+    const consumer = this.kafka.consumer({ 
+                                    groupId,
+                                    sessionTimeout: 30000,
+                                    heartbeatInterval: 3000,
+                                    readUncommitted: false 
+                                  });
     await consumer.connect();
     return consumer;
   }
