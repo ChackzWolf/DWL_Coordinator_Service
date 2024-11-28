@@ -26,7 +26,8 @@ export class SagaCoordinator {
       'tutor.response',
       'user.response',
       'course.response',
-      'order.response'
+      'order.response',
+      'chat.response'
     ];
     
     for (const topic of serviceResponseTopics) {
@@ -111,7 +112,8 @@ export class SagaCoordinator {
       { service: 'tutor-service', topic: 'tutor.update' },
       { service: 'user-service', topic: 'user.update' },
       { service: 'course-service', topic: 'course.update' },
-      { service: 'order-service', topic: 'order.update' }
+      { service: 'order-service', topic: 'order.update' },
+      { service: 'chat-service', topic: 'chat.update' },
     ];
 
     // Initialize service responses
