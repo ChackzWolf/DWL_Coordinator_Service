@@ -1,12 +1,19 @@
-// src/config/database.ts
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
+// import { configs } from "../ENV.cofnigs/ENV.configs";
+   
+const connectDB = async () => {
+  try {   
+    // if (!configs.MONGODB_URL_TUTOR) {
+    //   throw new Error("MONGO_URI is not defined in the environment variables");
+    // }
+    console.log('mongodb+srv://jacksoncheriyan05:MongoDBPassword@cluster0.oh2lv.mongodb.net/SAGACOORDINATOR')
 
-export async function connectDB() {
-  try {
-    await mongoose.connect('mongodb://localhost:27017/saga-coordinator');
-    console.log('Connected to MongoDB');
-  } catch (error) {
-    console.error('MongoDB connection error:', error);
-    process.exit(1);
+    await mongoose.connect('mongodb+srv://jacksoncheriyan05:MongoDBPassword@cluster0.oh2lv.mongodb.net/SAGACOORDINATOR');
+    console.log("Tutor Service Database connected");
+  } catch (error: any) {
+    console.error("Error connecting to MongoDB:", error.message);
+    process.exit(1); 
   }
-}
+}; 
+
+export { connectDB };   

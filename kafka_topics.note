@@ -1,0 +1,36 @@
+// Topic to start saga steps
+
+payment.success
+
+
+
+// Topics to update all services
+
+admin.update
+tutor.update
+user.update
+course.update
+order.update
+chat.update
+
+
+
+//Topics to see response from all service
+
+admin.response
+tutor.response
+user.response
+course.response
+order.response
+chat.response
+
+
+
+//Topics for rollback
+
+admin-service.rollback
+tutor-service.rollback
+user-service.rollback
+course-service.rollback
+order-service.rollback
+chat-service.rollback 

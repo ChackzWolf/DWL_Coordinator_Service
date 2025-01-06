@@ -1,4 +1,4 @@
-import { TransactionModel } from "../Models/Transaction";
+import { TransactionModel } from "./Models/Transaction";
 import { ServiceResponse, TransactionState } from "../Types/types";
 
 // src/repositories/TransactionRepository.ts

@@ -20,9 +20,9 @@ export class SagaCoordinator {
     // Subscribe to payment.success 
     await consumer.subscribe({ topic: 'payment.success', fromBeginning: false });
     
-    // Subscribe to service response topics
-    const serviceResponseTopics = [
-      'admin.response',
+    // Subscribe to service response topics 
+    const serviceResponseTopics = [ 
+      'admin.response', 
       'tutor.response',
       'user.response',
       'course.response',
