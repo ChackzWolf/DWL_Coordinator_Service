@@ -9,7 +9,10 @@ import { configs } from './Configs/ENV.configs';
 async function startServer() {
   const app = express();
   app.use(express.json());
-
+  app.get('/health', (req, res) => {
+    res.status(200).json({ status: 'healthy' });
+  });
+  
   try {
     // Connect to MongoDB
     await connectDB();

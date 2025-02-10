@@ -8,7 +8,7 @@ export class KafkaConfig {
   private constructor() {
     this.kafka = new Kafka({
       clientId: 'nodejs-kafka', 
-      brokers: ['localhost:9092'],
+      brokers: ['education-kafka:29092'],
     });
   }
 

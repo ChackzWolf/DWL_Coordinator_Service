@@ -1,0 +1,86 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coordinator-service-config
+data:
+  PORT: "4001"
+  KAFKA_CLIENT_ID: "nodejs-kafka"
+  SERVICE_TIMEOUT: "30000"
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: coordinator-service-secrets
+type: Opaque
+data:
+  MONGODB_URL_TUTOR: "bW9uZ29kYitzcnY6Ly9qYWNrc29uY2hlcml5YW4wNTpNb25nb0RCUGFzc3dvcmRAY2x1c3RlcjAub2gybHYubW9uZ29kYi5uZXQvU0FHQUNPT1JESU5BVE9S"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: coordinator-service
+  labels:
+    app: coordinator-service
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: coordinator-service
+  template:
+    metadata:
+      labels:
+        app: coordinator-service
+    spec:
+      hostAliases:
+      - ip: "172.17.0.1"
+        hostnames:
+        - "education-kafka"
+      containers:
+      - name: coordinator-service
+        image: coordinator-service:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 4001
+          name: http
+        envFrom:
+        - configMapRef:
+            name: coordinator-service-config
+        - secretRef:
+            name: coordinator-service-secrets
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: http
+          initialDelaySeconds: 15
+          periodSeconds: 20
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: coordinator-service
+spec:
+  type: ClusterIP
+  ports:
+  - port: 4001
+    targetPort: http
+    protocol: TCP
+    name: http
+  selector:
+    app: coordinator-service

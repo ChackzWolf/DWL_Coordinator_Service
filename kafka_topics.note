@@ -33,4 +33,3 @@ tutor-service.rollback
 user-service.rollback
 course-service.rollback
 order-service.rollback
-chat-service.rollback 
