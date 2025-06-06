@@ -1,4 +1,3 @@
-// src/server.ts
 import express from 'express';
 import { KafkaConfig } from './Configs/Kafka.config';
 import { connectDB } from './Configs/Database';
@@ -57,28 +56,3 @@ async function startServer() {
 
 
 startServer()
-// async function startServer() {
-//   try {
-//     // Connect to MongoDB
-//     await mongoose.connect(MONGODB_URI);
-//     console.log('Connected to MongoDB');
-
-//     // Initialize services
-//     const kafkaConfig = new KafkaConfig();
-//     const sagaRepository = new SagaRepository();
-//     const orchestrator = new SagaOrchestratorService(kafkaConfig, sagaRepository);
-
-//     // Start the orchestrator
-//     await orchestrator.start();
-
-//     // Start the server
-//     app.listen(PORT, () => {
-//       console.log(`Saga Orchestrator Service running on port ${PORT}`);
-//     });
-//   } catch (error) {
-//     console.error('Failed to start server:', error);
-//     process.exit(1);
-//   }
-// }
-
-// startServer();
