@@ -13,7 +13,7 @@ export class KafkaConfig {
 
     this.kafka = new Kafka({
       clientId: 'nodejs-kafka',
-      brokers: [brokerAddress],
+      brokers: [process.env.KAFKA_BROKER || 'education-platform-kafka:9092'],
     });
   }
 
