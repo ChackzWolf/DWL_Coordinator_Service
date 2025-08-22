@@ -6,14 +6,9 @@ export class KafkaConfig {
   private static instance: KafkaConfig;
 
   private constructor() {
-    const brokerAddress = process.env.KAFKA_BROKER;
-    if (!brokerAddress) {
-      throw new Error('KAFKA_BROKER env variable is missing!');
-    }
-
     this.kafka = new Kafka({
-      clientId: 'nodejs-kafka',
-      brokers: [process.env.KAFKA_BROKER || 'education-platform-kafka:29092']
+      clientId: 'nodejs-kafka', 
+      brokers: ['education-kafka:29092'],
     });
   }
 
@@ -25,12 +20,12 @@ export class KafkaConfig {
   }
 
   public async createConsumer(groupId: string): Promise<Consumer> {
-    const consumer = this.kafka.consumer({
-      groupId,
-      sessionTimeout: 30000,
-      heartbeatInterval: 3000,
-      readUncommitted: false
-    });
+    const consumer = this.kafka.consumer({ 
+                                    groupId,
+                                    sessionTimeout: 30000,
+                                    heartbeatInterval: 3000,
+                                    readUncommitted: false 
+                                  });
     await consumer.connect();
     return consumer;
   }
@@ -55,24 +50,24 @@ export class KafkaConfig {
 
   async createTopic(topicName: string, noOfPartition: number) {
     try {
-      const admin = this.kafka.admin();
-      await admin.connect();
-      await admin.createTopics({
-        topics: [
-          {
-            topic: topicName,
-            numPartitions: noOfPartition,
-            replicationFactor: 1,
-          },
-        ],
-      });
-      await admin.disconnect();
+        const admin = this.kafka.admin();
+        await admin.connect();
+        await admin.createTopics({
+            topics: [
+                {
+                    topic: topicName,
+                    numPartitions: noOfPartition,
+                    replicationFactor: 1,
+                },
+            ],
+        });
+        await admin.disconnect();
 
-      console.log("Topic successfully created.");
+        console.log("Topic successfully created.");
     } catch (error) {
-      console.log("Failed to create topic.");
+        console.log("Failed to create topic.");
     }
-  }
+}
 }
 
 
