@@ -16,7 +16,7 @@ export class KafkaConfig {
 
     this.kafka = new Kafka({
       clientId: 'nodejs-kafka',
-      brokers: [process.env.KAFKA_BROKER || 'education-platform-kafka.dowhilelearn.svc.cluster.local:29092']
+      brokers: ['education-platform-kafka.dowhilelearn.svc.cluster.local:29092']
     });
   }
 
