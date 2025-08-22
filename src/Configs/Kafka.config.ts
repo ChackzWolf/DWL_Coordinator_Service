@@ -1,4 +1,3 @@
-// src/Configs/Kafka.config.ts
 import { Kafka, Consumer, Producer } from 'kafkajs';
 
 export class KafkaConfig {
@@ -7,13 +6,17 @@ export class KafkaConfig {
 
   private constructor() {
     const brokerAddress = process.env.KAFKA_BROKER;
+
+    console.log('Using Kafka brokers:', brokerAddress);
+
+    
     if (!brokerAddress) {
       throw new Error('KAFKA_BROKER env variable is missing!');
     }
 
     this.kafka = new Kafka({
       clientId: 'nodejs-kafka',
-      brokers: [process.env.KAFKA_BROKER || 'education-platform-kafka:29092']
+      brokers: [process.env.KAFKA_BROKER || 'education-platform-kafka.dowhilelearn.svc.cluster.local:29092']
     });
   }
 
